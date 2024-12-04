@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Remote TV</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+        #nameDisplay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: white;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="nameDisplay">Nama: Azizah Elok Harvianti <br> NRP: 5025221243</div>
+    <canvas id="myCanvas" width="800" height="800"></canvas>
+    <script type="text/javascript" src="js/gl-matrix-min.js"></script>
+    <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+    <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>
