@@ -8,14 +8,6 @@ async function main() {
   function loadTexture(gl, url) {
     console.log(`Loading texture from: ${url}`);
     const texture = gl.createTexture();
-import { parseOBJ, parseMTL } from './parse.js';
-import { vs, fs } from './shader.js';
-
-async function main() {
-
-  function loadTexture(gl, url) {
-    console.log(`Loading texture from: ${url}`);
-    const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
   
     const level = 0;
@@ -28,31 +20,11 @@ async function main() {
     const placeholderPixel = new Uint8Array([255, 0, 0, 255]); 
     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, placeholderPixel);
   
-    const placeholderPixel = new Uint8Array([255, 0, 0, 255]); 
-    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, placeholderPixel);
-  
   
     const image = new Image();
     image.onload = function() {
       console.log(`Texture loaded successfully: ${url}`);
-    image.onload = function() {
-      console.log(`Texture loaded successfully: ${url}`);
       gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
-      
-     
-      gl.generateMipmap(gl.TEXTURE_2D);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    };
-
-    image.onerror = function() {
-      console.error(`Failed to load texture: ${url}`);
-    };
-  
       gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
       
      
@@ -85,66 +57,7 @@ async function main() {
           console.error(`Failed to load texture for material: ${materialName}`, error);
           material.texture = null;
         }
-
-  async function loadMaterialsAndTextures(gl, materials, baseHref) {
-    for (const materialName in materials) {
-      const material = materials[materialName];
-      if (material.texturePath) {
-        const textureUrl = new URL(material.texturePath, baseHref).href;
-        try {
-          material.texture = await loadTexture(gl, textureUrl);
-          console.log(`Texture loaded for material: ${materialName}`);
-        } catch (error) {
-          console.error(`Failed to load texture for material: ${materialName}`, error);
-          material.texture = null;
-        }
       } else {
-        material.texture = null;
-      }
-    }
-  }  
-  
-    /** @type {HTMLCanvasElement} */
-    const canvas = document.getElementById("myCanvas");
-    const gl = canvas.getContext("webgl");
-    if (!gl) {
-      return;
-    }
-  
-    
-    const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
-  
-    const objHref = 'assets/remote_tv_samsung.obj';
-
-    const response = await fetch('assets/remote_tv_samsung.obj');
-    const texture = loadTexture(gl, 'assets/texture/texture.jpg');
-    const text = await response.text();
-    const obj = parseOBJ(text);
-    const baseHref = new URL('assets/remote_tv_samsung.obj', window.location.href);
-    const matTexts = await Promise.all(obj.materialLibs.map(async filename => {
-      const matHref = new URL(filename, baseHref).href;
-      const response = await fetch(matHref);
-      return await response.text();
-    }));
-    const materials = parseMTL(matTexts.join('\n'));
-    await loadMaterialsAndTextures(gl, materials, baseHref);
-
-    Object.keys(materials).forEach((materialName) => {
-      const material = materials[materialName];
-      if (material.diffuseMap) {
-
-        const textureUrl = `assets/texture/${material.diffuseMap}`;
-        console.log(`Loading texture for material ${materialName} from: ${textureUrl}`);
-        material.texture = loadTexture(gl, textureUrl);
-      } else {
-        console.warn(`Material ${materialName} does not have a diffuseMap.`);
-        material.texture = null; 
-      }
-    });
-
-    console.log(materials);
-
-    const defaultMaterial = {
         material.texture = null;
       }
     }
@@ -193,53 +106,7 @@ async function main() {
     const defaultMaterial = {
       diffuse: [1, 1, 1],
       ambient: [0, 0, 0],
-      ambient: [0, 0, 0],
       specular: [1, 1, 1],
-      shininess: 40,
-      opacity: 1,
-    };Object
-  
-    const parts = obj.geometries.map(({ material, data }) => {
-       
-        const materialInfo = materials[material] || defaultMaterial;
-      
-       
-        if (data.color) {
-          if (data.position.length === data.color.length) {
-            
-            data.color = { numComponents: 3, data: data.color };
-          }
-        } else {
-          
-          data.color = { value: materialInfo.diffuse ? [...materialInfo.diffuse, 1] : [1, 1, 1, 1] };
-        }
-
-        
-        
-        const bufferInfo = webglUtils.createBufferInfoFromArrays(gl, data);
-        return {
-          material: materialInfo,
-          bufferInfo,
-          texture: materialInfo.texture, // Use the material's texture
-        };
-    });
-      
-  
-    function getExtents(positions) {
-      const min = positions.slice(0, 3);
-      const max = positions.slice(0, 3);
-      for (let i = 3; i < positions.length; i += 3) {
-        for (let j = 0; j < 3; ++j) {
-          const v = positions[i + j];
-          min[j] = Math.min(v, min[j]);
-          max[j] = Math.max(v, max[j]);
-        }
-      }
-      return {min, max};
-    }
-  
-    function getGeometriesExtents(geometries) {
-      return geometries.reduce(({min, max}, {data}) => {
       shininess: 40,
       opacity: 1,
     };Object
@@ -290,7 +157,6 @@ async function main() {
           min: min.map((min, ndx) => Math.min(minMax.min[ndx], min)),
           max: max.map((max, ndx) => Math.max(minMax.max[ndx], max)),
         };
-      }, {
       }, {
         min: Array(3).fill(Number.POSITIVE_INFINITY),
         max: Array(3).fill(Number.NEGATIVE_INFINITY),
